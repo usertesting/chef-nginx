@@ -12,6 +12,7 @@ depends 'apt',             '~> 2.2'
 depends 'bluepill',        '~> 2.3'
 depends 'build-essential', '~> 1.4'
 depends 'ohai',            '~> 1.1'
+depends 'resource_cache',  '~> 0.5'
 depends 'runit',           '~> 1.2'
 depends 'yum',             '~> 2.3'
 

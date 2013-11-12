@@ -93,24 +93,26 @@ end
 
 configure_flags       = node.run_state['nginx_configure_flags']
 nginx_force_recompile = node.run_state['nginx_force_recompile']
+cache_conditions      = {
+    :version      => node['nginx']['source']['version'],
+    :config_flags => configure_flags
+}
+resource_cache 'build nginx' do
+  bypass nginx_force_recompile
+  conditions cache_conditions
+  resources do
+    bash 'compile_nginx_source' do
+      cwd  ::File.dirname(src_filepath)
+      code <<-EOH
+        cd nginx-#{node['nginx']['source']['version']} &&
+        ./configure #{configure_flags.join(" ")} &&
+        make && make install
+      EOH
 
-bash 'compile_nginx_source' do
-  cwd  ::File.dirname(src_filepath)
-  code <<-EOH
-    cd nginx-#{node['nginx']['source']['version']} &&
-    ./configure #{node.run_state['nginx_configure_flags'].join(" ")} &&
-    make && make install
-  EOH
-
-  not_if do
-    nginx_force_recompile == false &&
-      node.automatic_attrs['nginx'] &&
-      node.automatic_attrs['nginx']['version'] == node['nginx']['source']['version'] &&
-      node.automatic_attrs['nginx']['configure_arguments'].sort == configure_flags.sort
+      notifies :restart, 'service[nginx]'
+      notifies :reload,  'ohai[reload_nginx]', :immediately
+    end
   end
-
-  notifies :restart, 'service[nginx]'
-  notifies :reload,  'ohai[reload_nginx]', :immediately
 end
 
 case node['nginx']['init_style']
