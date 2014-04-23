@@ -21,22 +21,21 @@
 
 include_attribute 'nginx::default'
 
-default['nginx']['source']['version']                 = node['nginx']['version']
-default['nginx']['source']['prefix']                  = "/opt/nginx-#{node['nginx']['source']['version']}"
-default['nginx']['source']['conf_path']               = "#{node['nginx']['dir']}/nginx.conf"
-default['nginx']['source']['sbin_path']               = "#{node['nginx']['source']['prefix']}/sbin/nginx"
-default['nginx']['source']['default_configure_flags'] = %W[
-                                                          --prefix=#{node['nginx']['source']['prefix']}
-                                                          --conf-path=#{node['nginx']['dir']}/nginx.conf
-                                                          --sbin-path=#{node['nginx']['source']['sbin_path']}
-                                                        ]
-
-default['nginx']['configure_flags']    = []
-default['nginx']['source']['version']  = node['nginx']['version']
-default['nginx']['source']['url']      = "http://nginx.org/download/nginx-#{node['nginx']['source']['version']}.tar.gz"
-default['nginx']['source']['checksum'] = '0510af71adac4b90484ac8caf3b8bd519a0f7126250c2799554d7a751a2db388'
-default['nginx']['source']['modules']  = %w[
-                                           nginx::http_ssl_module
-                                           nginx::http_gzip_static_module
-                                         ]
+default['nginx']['configure_flags']             = []
 default['nginx']['source']['use_existing_user'] = false
+default['nginx']['source']['modules']           = %w[
+                                                   nginx::http_ssl_module
+                                                   nginx::http_gzip_static_module
+                                                  ]
+
+# Checksum for the version 1.2.9 -- the current default for nginx.version attribute
+default['nginx']['source']['checksum']  = '23b8ff4a76817090678f91b0efbfcef59a93492f6612dc8370c44c1f1ce1b626'
+
+# Defaults for the below attrs are set in recipes/source.rb to pick up dynamic
+# attr changes for nginx.version / nginx.source.version
+default['nginx']['source']['version']   = nil
+default['nginx']['source']['prefix']    = nil
+default['nginx']['source']['conf_path'] = nil
+default['nginx']['source']['sbin_path'] = nil
+default['nginx']['source']['url']       = nil
+
