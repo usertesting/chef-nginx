@@ -40,11 +40,13 @@ end
 bash 'extract_headers_more' do
   cwd  ::File.dirname(tar_location)
   user 'root'
-  code <<-EOH
-    tar -zxf #{tar_location} -C #{module_location}
-    mv -f #{module_location}/agentz*/* #{module_location}
-    rm -rf #{module_location}/agentz*
-  EOH
+  tar_file_list = `tar tf #{tar_location}`
+  configfile = tar_file_list.split(/\n/).grep(/\/?config$/).first
+  pathcut = configfile.sub(/\/?config$/,'')
+  runthis = "tar -zxf #{tar_location}"
+  if pathcut.to_s.length > 0
+    runthis << " -C #{pathcut}"
+  code runthis
   not_if { ::File.exists?("#{module_location}/config") }
 end
 
