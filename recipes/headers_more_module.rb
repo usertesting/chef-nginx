@@ -41,8 +41,9 @@ bash 'extract_headers_more' do
   cwd  ::File.dirname(tar_location)
   user 'root'
   code <<-EOH
-    set -x
-    tar xzvf #{tar_location} -C #{module_location} --strip-components=1
+    tar -zxf #{tar_location} -C #{module_location}
+    mv -f #{module_location}/openresty*/* #{module_location}
+    rm -rf #{module_location}/openresty*
   EOH
   not_if { ::File.exists?("#{module_location}/config") }
 end
