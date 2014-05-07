@@ -41,9 +41,7 @@ bash 'extract_headers_more' do
   cwd  ::File.dirname(tar_location)
   user 'root'
   code <<-EOH
-    tar -zxf #{tar_location} -C #{module_location}
-    mv -f #{module_location}/agentz*/* #{module_location}
-    rm -rf #{module_location}/agentz*
+    tar xzf #{tar_location} --strip-components=1 -C #{module_location}
   EOH
   not_if { ::File.exists?("#{module_location}/config") }
 end
