@@ -41,10 +41,7 @@ bash 'extract_headers_more' do
   cwd  ::File.dirname(tar_location)
   user 'root'
   code <<-EOH
-    tar -zxf #{tar_location} -C #{module_location}
-    anchordir=`find #{module_location} -name config -print | sed 's/config//'`
-    mv -f ${anchordir}/* #{module_location}
-    rm -rf ${anchordir}
+    tar -zxf #{tar_location} -C #{module_location} --strip-components=1
   EOH
   not_if { ::File.exists?("#{module_location}/config") }
 end
